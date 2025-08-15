@@ -6,6 +6,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from './categories/category.entity';
+import { Product } from './products/product.entity';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { Category } from './categories/category.entity';
         username: configService.get<string>('POSTGRES_USER'),
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_DB'),
-        entities: [Category],
+        entities: [Category, Product],
         synchronize: true,
       }),
     }),
