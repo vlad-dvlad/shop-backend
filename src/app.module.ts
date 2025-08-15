@@ -2,11 +2,10 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppService } from './app.service';
-import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Category } from './categories/category.entity';
-import { Product } from './products/product.entity';
+import { Category } from './products/entity/category.entity';
+import { Product } from './products/entity/product.entity';
 
 @Module({
   imports: [
@@ -27,7 +26,6 @@ import { Product } from './products/product.entity';
         synchronize: true,
       }),
     }),
-    CategoriesModule,
     ProductsModule,
   ],
   controllers: [AppController],
