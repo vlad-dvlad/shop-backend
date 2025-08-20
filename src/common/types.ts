@@ -7,3 +7,16 @@ export interface PaginatedData<T> {
   nextPage: Nullable<number>;
   prevPage: Nullable<number>;
 }
+
+export enum UserRole {
+  USER = 'USER',
+  CUSTOMER = 'CUSTOMER',
+  ADMIN = 'ADMIN',
+}
+
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+}
