@@ -1,13 +1,13 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('reviews')
 export class Review {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 255 })
+  @Column({ length: 1000 })
   comment: string;
 
-  @Column()
+  @Column({ type: 'int', default: 0 })
   mark: number;
 }

@@ -7,30 +7,46 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+// Define a proper interface for order items
+export interface OrderItem {
+  productId: number;
+  quantity: number;
+  price: number; // Price at the time of order
+}
+
+@Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING })
+  @Column({
+    type: 'enum',
+    enum: OrderStatus,
+    default: OrderStatus.PENDING,
+  })
   status: OrderStatus;
 
   // Todo add relations
-  @Column()
+  @Column({ type: 'int' })
   userId: number;
 
-  @Column()
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    default: 0,
+  })
   totalPrice: number;
+
+  @Column({
+    type: 'jsonb',
+    default: [],
+  })
+  products: OrderItem[];
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @Column({ type: 'jsonb' })
-  products: {
-    productId: number;
-    quantity: number;
-  }[];
 }

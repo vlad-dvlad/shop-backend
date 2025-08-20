@@ -1,33 +1,33 @@
 import { UserRole } from 'src/common/types';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 100 })
   firstName: string;
 
-  @Column()
+  @Column({ length: 100 })
   lastName: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, length: 255 })
   email: string;
 
-  @Column()
+  @Column({ length: 255 })
   password: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'int', nullable: true })
   age?: number;
 
-  @Column({ nullable: true })
+  @Column({ length: 255, nullable: true })
   street?: string;
 
-  @Column({ nullable: true })
+  @Column({ length: 20, nullable: true })
   zipCode?: string;
 
-  @Column({ nullable: true })
+  @Column({ length: 100, nullable: true })
   city?: string;
 
   @Column({
@@ -35,5 +35,5 @@ export class User {
     enum: UserRole,
     default: UserRole.USER,
   })
-  role: string;
+  role: UserRole;
 }

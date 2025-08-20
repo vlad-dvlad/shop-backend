@@ -9,6 +9,9 @@ import { Product } from './products/entity/product.entity';
 import { ReviewsModule } from './reviews/reviews.module';
 import { UsersModule } from './users/users.module';
 import { OrdersModule } from './orders/orders.module';
+import { Order } from './orders/entity/order.entity';
+import { Review } from './reviews/entity/review.entity';
+import { User } from './users/entity/user.entity';
 
 @Module({
   imports: [
@@ -25,7 +28,7 @@ import { OrdersModule } from './orders/orders.module';
         username: configService.get<string>('POSTGRES_USER'),
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_DB'),
-        entities: [Category, Product],
+        entities: [Category, Product, Order, Review, User],
         synchronize: true,
       }),
     }),
