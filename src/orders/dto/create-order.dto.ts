@@ -21,14 +21,9 @@ export class OrderItemDto {
 }
 
 export class CreateOrderDto {
-  @IsNotEmpty({ message: 'User ID is required' })
-  @IsNumber({}, { message: 'User ID must be a number' })
-  @IsPositive({ message: 'User ID must be positive' })
-  userId: number;
-
   @IsNotEmpty({ message: 'Products array is required' })
   @IsArray({ message: 'Products must be an array' })
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)
-  products: OrderItemDto[];
+  items: OrderItemDto[];
 }

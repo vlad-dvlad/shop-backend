@@ -26,5 +26,5 @@ export class UpdateOrderDto {
   @IsArray({ message: 'Products must be an array' })
   @ValidateNested({ each: true })
   @Type(() => UpdateOrderItemDto)
-  products?: UpdateOrderItemDto[];
+  items?: UpdateOrderItemDto[];
 }

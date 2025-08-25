@@ -1,5 +1,4 @@
 import { OrderStatus } from 'src/common/types';
-import { Product } from 'src/products/entity/product.entity';
 import { User } from 'src/users/entity/user.entity';
 import {
   Column,
@@ -10,28 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-@Entity('order_item')
-export class OrderItem {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @ManyToOne(() => Order, (order) => order.items, { onDelete: 'CASCADE' })
-  order: Order;
-
-  @ManyToOne(() => Product, { eager: true })
-  product: Product;
-
-  @Column({ type: 'int' })
-  quantity: number;
-
-  @Column({
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-  })
-  price: number; // the same as product
-}
+import { OrderItem } from './order-item.entity';
 
 @Entity('orders')
 export class Order {
