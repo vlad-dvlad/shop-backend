@@ -23,11 +23,6 @@ export class UpdateOrderItemDto {
 
 export class UpdateOrderDto {
   @IsOptional()
-  @IsNumber({}, { message: 'Total price must be a number' })
-  @Min(0, { message: 'Total price cannot be negative' })
-  totalPrice?: number;
-
-  @IsOptional()
   @IsArray({ message: 'Products must be an array' })
   @ValidateNested({ each: true })
   @Type(() => UpdateOrderItemDto)

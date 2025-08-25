@@ -26,11 +26,6 @@ export class CreateOrderDto {
   @IsPositive({ message: 'User ID must be positive' })
   userId: number;
 
-  @IsNotEmpty({ message: 'Total price is required' })
-  @IsNumber({}, { message: 'Total price must be a number' })
-  @Min(0, { message: 'Total price cannot be negative' })
-  totalPrice: number;
-
   @IsNotEmpty({ message: 'Products array is required' })
   @IsArray({ message: 'Products must be an array' })
   @ValidateNested({ each: true })

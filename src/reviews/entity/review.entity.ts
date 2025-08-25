@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Product } from 'src/products/entity/product.entity';
+import { User } from 'src/users/entity/user.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('reviews')
 export class Review {
@@ -10,4 +12,14 @@ export class Review {
 
   @Column({ type: 'int', default: 0 })
   mark: number;
+
+  @ManyToOne(() => Product, (product) => product.reviews, {
+    onDelete: 'CASCADE',
+  })
+  product: Product;
+
+  @ManyToOne(() => User, (user) => user.reviews, {
+    onDelete: 'CASCADE',
+  })
+  user: User;
 }

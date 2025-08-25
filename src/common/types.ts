@@ -10,7 +10,7 @@ export interface PaginatedData<T> {
 
 export enum UserRole {
   USER = 'USER',
-  CUSTOMER = 'CUSTOMER',
+  VENDOR = 'VENDOR',
   ADMIN = 'ADMIN',
 }
 
