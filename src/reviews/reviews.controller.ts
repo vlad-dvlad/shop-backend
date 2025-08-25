@@ -33,6 +33,15 @@ export class ReviewsController {
     return this.reviewService.getById(id);
   }
 
+  @Get(':productId')
+  getByProductId(
+    @Param('productId', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ): Promise<PaginatedData<Review>> {
+    return this.reviewService.getByProductId(id, page, perPage);
+  }
+
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   create(@Body() createReviewDto: CreateReviewDto) {

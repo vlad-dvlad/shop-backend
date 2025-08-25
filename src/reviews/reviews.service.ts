@@ -37,6 +37,31 @@ export class ReviewsService {
     return review;
   }
 
+  async getByProductId(
+    id: number,
+    page = 1,
+    perPage = 10,
+  ): Promise<PaginatedData<Review>> {
+    const perPageMin = Math.min(perPage, 100);
+
+    const [data, total] = await this.reviewsRepository.findAndCount({
+      where: { product: { id } },
+      skip: (page - 1) * perPageMin,
+      take: perPageMin,
+      order: { id: 'ASC' },
+    });
+
+    const totalPages = Math.ceil(total / perPageMin);
+
+    return {
+      data,
+      total,
+      pages: totalPages,
+      nextPage: page < totalPages ? page + 1 : null,
+      prevPage: page > 1 ? page - 1 : null,
+    };
+  }
+
   async create(createReviewDto: CreateReviewDto): Promise<Review> {
     const review = this.reviewsRepository.create(createReviewDto);
     const result = await this.reviewsRepository.save(review);
