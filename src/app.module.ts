@@ -13,6 +13,7 @@ import { Order } from './orders/entity/order.entity';
 import { Review } from './reviews/entity/review.entity';
 import { User } from './users/entity/user.entity';
 import { OrderItem } from './orders/entity/order-item.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { OrderItem } from './orders/entity/order-item.entity';
     ReviewsModule,
     UsersModule,
     OrdersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

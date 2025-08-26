@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -7,6 +8,7 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+import { UserRole } from 'src/common/types';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -51,4 +53,8 @@ export class UpdateUserDto {
   @IsString({ message: 'City must be a string' })
   @MaxLength(100, { message: 'City cannot exceed 100 characters' })
   city?: string;
+
+  @IsOptional()
+  @IsEnum(UserRole)
+  role?: UserRole;
 }

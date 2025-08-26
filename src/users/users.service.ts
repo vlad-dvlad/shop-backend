@@ -2,9 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
-import { PaginatedData } from 'src/common/types';
+import { Nullable, PaginatedData, UserRole } from 'src/common/types';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -47,11 +48,26 @@ export class UsersService {
     return user;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.usersRepository.create(createUserDto);
-    const result = await this.usersRepository.save(user);
+  async getByEmail(email: string): Promise<Nullable<User>> {
+    const user = await this.usersRepository.findOne({ where: { email } });
 
-    return result;
+    if (!user) {
+      throw new NotFoundException(`User with email: ${email} not found`);
+    }
+
+    return user;
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const { email, password } = createUserDto;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = this.usersRepository.create({
+      ...createUserDto,
+      email,
+      password: hashedPassword,
+      role: UserRole.USER,
+    });
+    return this.usersRepository.save(user);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
