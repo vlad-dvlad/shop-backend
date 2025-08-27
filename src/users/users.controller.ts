@@ -8,20 +8,27 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { PaginatedData } from 'src/common/types';
+import { PaginatedData, UserRole } from 'src/common/types';
 import { User } from './entity/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
+import { RoleGuard } from 'src/auth/role/role.guard';
+import { Roles } from 'src/auth/role/roles.decorator';
+import { getAccess } from 'src/common/utils';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   async getAll(
     @Query('page') page = 1,
     @Query('perPage') perPage = 10,
@@ -30,17 +37,23 @@ export class UsersController {
   }
 
   @Get(':id')
+  @Roles(...getAccess('full'))
+  @UseGuards(JwtAuthGuard, RoleGuard)
   async getById(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.getById(id);
   }
 
   @Post()
+  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
 
   @Patch(':id')
+  @Roles(...getAccess('full'))
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -50,6 +63,8 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Roles(...getAccess('full'))
+  @UseGuards(JwtAuthGuard, RoleGuard)
   delete(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Record<string, boolean>> {
