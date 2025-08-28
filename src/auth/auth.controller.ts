@@ -2,13 +2,11 @@ import {
   Body,
   Controller,
   InternalServerErrorException,
-  Param,
-  ParseIntPipe,
   Post,
+  Req,
   Res,
   UnauthorizedException,
   UseGuards,
-  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,8 +15,8 @@ import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtAuthGuard, JwtRefreshGuard } from './jwt/jwt-auth.guard';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import type { LoginPayload } from './types';
-import { AuthCookieInterceptor } from './auth-cookie-interceptor';
+import type { JwtPayload } from './types';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -28,47 +26,93 @@ export class AuthController {
   ) {}
 
   @Post('signup')
-  @UseInterceptors(AuthCookieInterceptor)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  async signup(@Body() createUserDto: CreateUserDto) {
+  async signup(
+    @Body() createUserDto: CreateUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const user = await this.usersService.create(createUserDto);
+    if (!user) throw new InternalServerErrorException('Server error');
 
-    if (!user) {
-      throw new InternalServerErrorException('Server error');
-    }
+    const tokens = this.authService.getTokens(user);
+    await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
+
+    res.cookie('accessToken', tokens.accessToken, {
+      httpOnly: true,
+      maxAge: 15 * 60 * 1000,
+      sameSite: 'strict',
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'strict',
+    });
 
     return { user };
   }
 
   @Post('login')
-  @UseInterceptors(AuthCookieInterceptor)
-  async login(@Body() loginPayload: LoginPayload) {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const user = await this.authService.validateUser(
-      loginPayload.email,
-      loginPayload.password,
+      loginDto.email,
+      loginDto.password,
     );
+    if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid login or password');
-    }
+    const tokens = this.authService.getTokens(user);
+    await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
+
+    res.cookie('accessToken', tokens.accessToken, {
+      httpOnly: true,
+      maxAge: 15 * 60 * 1000,
+      sameSite: 'strict',
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'strict',
+    });
 
     return { user };
   }
 
   @Post('refresh')
   @UseGuards(JwtRefreshGuard)
-  @UseInterceptors(AuthCookieInterceptor)
-  async refresh(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.usersService.getById(id);
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const payload = req.user as JwtPayload;
+    const user = await this.usersService.getById(payload.sub);
+    const tokens = this.authService.getTokens(user);
+    await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
+
+    res.cookie('accessToken', tokens.accessToken, {
+      httpOnly: true,
+      maxAge: 15 * 60 * 1000,
+      sameSite: 'strict',
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'strict',
+    });
 
     return { user, onlyAccess: true };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('logout')
-  logout(@Res({ passthrough: true }) res: Response) {
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const payload = req.user as JwtPayload;
+    await this.authService.removeRefreshToken(payload.sub);
+
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
+
     return { message: 'Logged out' };
   }
 }

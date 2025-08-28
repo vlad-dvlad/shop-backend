@@ -39,6 +39,9 @@ export class User {
   })
   role: UserRole;
 
+  @Column({ nullable: true })
+  hashedRefreshToken?: string;
+
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
 
