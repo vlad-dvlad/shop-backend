@@ -14,6 +14,10 @@ import { Review } from './reviews/entity/review.entity';
 import { User } from './users/entity/user.entity';
 import { OrderItem } from './orders/entity/order-item.entity';
 import { AuthModule } from './auth/auth.module';
+import { EmailService } from './email/email.service';
+import { EmailController } from './email/email.controller';
+import { EmailModule } from './email/email.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -39,8 +43,10 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     OrdersModule,
     AuthModule,
+    EmailModule,
+    JwtModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, EmailController],
+  providers: [AppService, EmailService],
 })
 export class AppModule {}
