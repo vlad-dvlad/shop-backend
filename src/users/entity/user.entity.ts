@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { UserRole } from 'src/common/types';
 import { Order } from 'src/orders/entity/order.entity';
 import { Review } from 'src/reviews/entity/review.entity';
@@ -17,6 +18,7 @@ export class User {
   @Column({ unique: true, length: 255 })
   email: string;
 
+  @Exclude()
   @Column({ length: 255 })
   password: string;
 
@@ -39,6 +41,7 @@ export class User {
   })
   role: UserRole;
 
+  @Exclude()
   @Column({ nullable: true })
   hashedRefreshToken?: string;
 

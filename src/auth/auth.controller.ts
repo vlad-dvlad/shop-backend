@@ -10,6 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { instanceToPlain } from 'class-transformer';
 import type { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
@@ -48,7 +49,9 @@ export class AuthController {
       sameSite: 'strict',
     });
 
-    return { user };
+    return {
+      user: instanceToPlain(user),
+    };
   }
 
   @Post('login')
@@ -76,7 +79,9 @@ export class AuthController {
       sameSite: 'strict',
     });
 
-    return { user };
+    return {
+      user: instanceToPlain(user),
+    };
   }
 
   @Post('refresh')
@@ -101,7 +106,10 @@ export class AuthController {
       sameSite: 'strict',
     });
 
-    return { user, onlyAccess: true };
+    return {
+      user: instanceToPlain(user),
+      onlyAccess: true,
+    };
   }
 
   @Post('logout')
